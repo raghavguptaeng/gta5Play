@@ -15,6 +15,7 @@ def process_img(orignal_image):
     possible_vertices = [[3,1072],[666,437],[1279,436],[1911,1075],[1311,1062],[1107,678],[752,672],[506,1052]]
     verticies = np.array(possible_vertices)
     processed_image = roi(processed_image,vertices=[verticies])
+    lines = cv2.HoughLines(processed_image,1,np.pi/180 ,180 ,2)
     return processed_image;
 def main():
     while (True):
