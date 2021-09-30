@@ -4,19 +4,30 @@ import cv2
 import time
 from directkeys import PressKey,W,A,S,D,ReleaseKey
 # time.sleep(5)
-def roi(img,vertices): ## used to crop the region which is of our interest
+def draw_lines(img,lines):
+    try:
+        for line in lines:
+            coords = line[0]
+            cv2.line(img, (coords[0], coords[1]), (coords[2], coords[3]), [255,255,255], 3)
+    except:
+        pass
+
+def roi(img, vertices):
     mask = np.zeros_like(img)
-    cv2.fillPoly(mask,vertices,255)
-    masked = cv2.bitwise_and(img,mask)
-    return masked;
-def process_img(orignal_image):
-    processed_image = cv2.cvtColor(orignal_image,cv2.COLOR_BGR2GRAY)
-    processed_image = cv2.Canny(processed_image,threshold1=200,threshold2=200)
-    possible_vertices = [[3,1072],[666,437],[1279,436],[1911,1075],[1311,1062],[1107,678],[752,672],[506,1052]]
-    verticies = np.array(possible_vertices)
-    processed_image = roi(processed_image,vertices=[verticies])
-    lines = cv2.HoughLines(processed_image,1,np.pi/180 ,180 ,2)
-    return processed_image;
+    cv2.fillPoly(mask, vertices, 255)
+    masked = cv2.bitwise_and(img, mask)
+    return masked
+
+def process_img(original_image):
+    processed_img = cv2.cvtColor(original_image, cv2.COLOR_BGR2GRAY)
+    processed_img = cv2.Canny(processed_img, threshold1=200, threshold2=300)
+    vertices = np.array([[3,1072],[666,437],[1279,436],[1911,1075],[1311,1062],[1107,678],[752,672],[506,1052]], np.int32)
+    processed_img = cv2.GaussianBlur(processed_img, (5, 5), 0)
+    # processed_img = roi(processed_img, [vertices])
+    lines = cv2.HoughLinesP(processed_img, 1, np.pi/180, 180,      20,         15)
+    draw_lines(processed_img,lines)
+    return processed_img
+
 def main():
     while (True):
         screen = np.array(ImageGrab.grab())
